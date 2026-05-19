@@ -1,0 +1,230 @@
+/* ============================================================
+   Loren Eatery POS — Public Queue Display Styles
+   ============================================================ */
+
+.queue-body {
+    background: #111827; /* Dark background for high contrast */
+    color: white;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.queue-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-6);
+}
+
+/* ── Header ────────────────────────────────────────── */
+.queue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-8);
+    background: rgba(255,255,255,0.05);
+    padding: var(--space-4) var(--space-6);
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.queue-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.logo-emoji {
+    font-size: 3rem;
+    background: var(--red-600);
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 0 30px rgba(230,48,48,0.4);
+}
+
+.brand-name {
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+
+.brand-tagline {
+    font-size: 1rem;
+    color: var(--yellow-400);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.queue-clock {
+    text-align: right;
+}
+
+.clock-time {
+    font-size: 2.5rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+
+.clock-date {
+    font-size: 1.1rem;
+    color: var(--gray-400);
+}
+
+/* ── Main Layout ───────────────────────────────────── */
+.queue-main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-6);
+    min-height: 0; /* Important for nested scrolling */
+}
+
+.queue-section {
+    background: rgba(255,255,255,0.03);
+    border-radius: var(--radius-xl);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 2px solid rgba(255,255,255,0.05);
+}
+
+.section-icon { font-size: 1.8rem; }
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.section-ready {
+    border-color: rgba(16,185,129,0.3);
+    background: radial-gradient(circle at top right, rgba(16,185,129,0.05), transparent);
+}
+
+.section-ready .section-title { color: #10b981; }
+
+.section-preparing .section-title { color: #3b82f6; }
+
+/* ── Grid/List ─────────────────────────────────────── */
+.queue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-4);
+    overflow-y: auto;
+}
+
+.queue-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    overflow-y: auto;
+}
+
+.queue-placeholder {
+    color: var(--gray-600);
+    font-size: 1.2rem;
+    text-align: center;
+    padding: 40px;
+    font-style: italic;
+}
+
+/* ── Order Tokens ──────────────────────────────────── */
+.queue-token {
+    background: rgba(255,255,255,0.05);
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
+    animation: popIn 0.5s var(--ease-bounce) both;
+}
+
+.token-number {
+    font-size: 3.5rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    line-height: 1;
+}
+
+.token-name {
+    font-size: 1rem;
+    color: var(--gray-400);
+    margin-top: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Ready State */
+.token-ready {
+    background: #059669;
+    border-color: #10b981;
+    box-shadow: 0 0 30px rgba(16,185,129,0.3);
+    animation: pulseReady 2s infinite;
+}
+
+.token-ready .token-name { color: rgba(255,255,255,0.8); }
+
+@keyframes pulseReady {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(16,185,129,0.3); }
+    50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(16,185,129,0.5); }
+}
+
+/* Preparing Item */
+.queue-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.05);
+    padding: var(--space-4) var(--space-6);
+    border-radius: var(--radius-md);
+}
+
+.row-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #3b82f6;
+}
+
+.row-name {
+    font-size: 1.2rem;
+    color: var(--gray-300);
+}
+
+/* ── Footer ────────────────────────────────────────── */
+.queue-footer {
+    margin-top: var(--space-6);
+    background: var(--red-600);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(230,48,48,0.3);
+}
+
+.footer-msg {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.msg-icon { margin-right: 10px; }
+
+/* ── Responsive ────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .queue-main { grid-template-columns: 1fr; }
+    .brand-name { font-size: 1.8rem; }
+    .logo-emoji { width: 50px; height: 50px; font-size: 2rem; }
+}

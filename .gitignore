@@ -1,0 +1,12 @@
+# Local configuration
+.env
+
+# Dynamic uploads (menu item images)
+uploads/*
+!uploads/.gitkeep
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Loren Eatery Admin Dashboard — Manage orders, menu, and staff." />
+  <title>Admin Dashboard — Loren Eatery</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="../assets/css/admin.css" />
+</head>
+<body class="admin-body">
+
+<!-- ── Toast Container ─────────────────────────────── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ════════════════════════════════════════════════════
+     LOGIN PAGE (shown if not authenticated)
+═════════════════════════════════════════════════════ -->
+<div id="loginPage" class="login-page">
+  <div class="login-card glass-card-solid">
+    <div class="login-logo">🍔</div>
+    <div class="login-title">Loren Eatery</div>
+    <div class="login-sub">Admin Dashboard</div>
+
+    <form id="loginForm" class="login-form">
+      <div class="form-group">
+        <label class="form-label" for="loginUser">Username</label>
+        <input type="text" id="loginUser" class="form-input" placeholder="admin"
+               autocomplete="username" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="loginPass">Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="loginPass" class="form-input" placeholder="••••••••"
+                 autocomplete="current-password" required />
+          <button type="button" id="togglePw" class="pw-toggle">👁</button>
+        </div>
+      </div>
+      <div id="loginError" class="login-error"></div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg" id="loginBtn">
+        Sign In
+      </button>
+    </form>
+    <a href="../index.html" class="login-back">← Back to POS</a>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     ADMIN LAYOUT (shown after login)
+═════════════════════════════════════════════════════ -->
+<div id="adminLayout" class="admin-layout hidden">
+
+  <!-- ── Sidebar ──────────────────────────────────── -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-brand">
+      <span class="admin-brand-icon">🍔</span>
+      <span class="admin-brand-name">Loren Eatery</span>
+    </div>
+
+    <nav class="admin-nav">
+      <button class="admin-nav-item active" data-page="orders" id="navOrders">
+        <span class="nav-icon">📋</span> Orders
+        <span class="nav-badge" id="navBadgePending">0</span>
+      </button>
+      <button class="admin-nav-item" data-page="menu" id="navMenu">
+        <span class="nav-icon">🍔</span> Menu Management
+      </button>
+      <button class="admin-nav-item" data-page="history" id="navHistory">
+        <span class="nav-icon">📁</span> Order History
+      </button>
+      <button class="admin-nav-item" data-page="dashboard" id="navDashboard">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
+    </nav>
+
+    <div class="admin-sidebar-footer">
+      <div class="admin-user-info" id="adminUserInfo">
+        <div class="admin-avatar">👤</div>
+        <div>
+          <div class="admin-uname" id="adminUname">Admin</div>
+          <div class="admin-role" id="adminRole">Super Admin</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-top:.75rem">
+        <a href="../queue.html" target="_blank" class="btn btn-ghost btn-sm" style="flex:1;text-align:center">
+          📺 Queue Display
+        </a>
+        <button class="btn btn-ghost btn-sm" id="btnLogout">Logout</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main Content ──────────────────────────────── -->
+  <div class="admin-content">
+
+    <!-- ── Mobile Header ──────────────────────────── -->
+    <header class="admin-mobile-header">
+      <button class="btn btn-ghost btn-icon" id="btnSidebarToggle">☰</button>
+      <span class="admin-mobile-title" id="mobilePageTitle">Orders</span>
+      <div></div>
+    </header>
+
+    <!-- ════════════════════════════════════════════
+         PAGE: ORDERS
+    ═════════════════════════════════════════════ -->
+    <div class="admin-page active" id="pageOrders">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Live Orders</h1>
+          <p class="page-sub">Real-time order management — updates every 5 seconds</p>
+        </div>
+        <div class="page-actions">
+          <div class="live-indicator"><span class="live-dot"></span> Live</div>
+        </div>
+      </div>
+
+      <!-- Status Filter Tabs -->
+      <div class="order-tabs" id="orderTabs">
+        <button class="order-tab active" data-status="all">All</button>
+        <button class="order-tab" data-status="pending">Pending <span class="tab-count" id="tcPending">0</span></button>
+        <button class="order-tab" data-status="preparing">Preparing <span class="tab-count" id="tcPreparing">0</span></button>
+        <button class="order-tab" data-status="ready">Ready <span class="tab-count" id="tcReady">0</span></button>
+        <button class="order-tab" data-status="completed">Completed <span class="tab-count" id="tcCompleted">0</span></button>
+        <button class="order-tab" data-status="cancelled">Cancelled <span class="tab-count" id="tcCancelled">0</span></button>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="order-search-bar">
+        <input type="search" id="orderSearch" class="form-input" placeholder="Search by queue # or customer name…" />
+        <input type="date"   id="orderDate"   class="form-input" style="max-width:180px" />
+      </div>
+
+      <!-- Orders Grid -->
+      <div class="orders-grid" id="ordersGrid">
+        <div class="admin-loading"><div class="spinner"></div><span>Loading orders…</span></div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════
+         PAGE: MENU MANAGEMENT
+    ═════════════════════════════════════════════ -->
+    <div class="admin-page" id="pageMenu">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Menu Management</h1>
+          <p class="page-sub">Add, edit, and manage your menu items</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" id="btnAddItem">+ Add Item</button>
+        </div>
+      </div>
+
+      <!-- Category Filter for Menu -->
+      <div class="menu-cat-filter" id="menuCatFilter">
+        <button class="cat-filter-btn active" data-cat="all">All</button>
+      </div>
+
+      <div class="menu-admin-grid" id="menuAdminGrid">
+        <div class="admin-loading"><div class="spinner"></div><span>Loading menu…</span></div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════
+         PAGE: ORDER HISTORY
+    ═════════════════════════════════════════════ -->
+    <div class="admin-page" id="pageHistory">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Order History</h1>
+          <p class="page-sub">Monthly order archive with CSV export</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary" id="btnExportCSV">⬇ Export CSV</button>
+        </div>
+      </div>
+
+      <div class="history-filters">
+        <input type="month" id="historyMonth" class="form-input" style="max-width:200px" />
+        <input type="search" id="historySearch" class="form-input" placeholder="Search orders…" />
+        <select id="historyStatus" class="form-select" style="max-width:160px">
+          <option value="">All Statuses</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="pending">Pending</option>
+        </select>
+        <button class="btn btn-ghost" id="btnHistorySearch">Search</button>
+      </div>
+
+      <div class="history-table-wrap">
+        <table class="history-table" id="historyTable">
+          <thead>
+            <tr>
+              <th>Queue #</th>
+              <th>Customer</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Payment</th>
+              <th>Change</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <tr><td colspan="8" class="table-empty">Select a month and search</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════
+         PAGE: DASHBOARD / STATS
+    ═════════════════════════════════════════════ -->
+    <div class="admin-page" id="pageDashboard">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-sub">Today's summary and activity log</p>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div class="stat-value" id="statOrders">0</div>
+          <div class="stat-label">Orders Today</div>
+        </div>
+        <div class="stat-card stat-card-red">
+          <div class="stat-icon">💰</div>
+          <div class="stat-value" id="statRevenue">₱0</div>
+          <div class="stat-label">Revenue Today</div>
+        </div>
+        <div class="stat-card stat-card-yellow">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-value" id="statPending">0</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card stat-card-green">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value" id="statCompleted">0</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🍔</div>
+          <div class="stat-value" id="statMenu">0</div>
+          <div class="stat-label">Menu Items</div>
+        </div>
+        <div class="stat-card stat-card-blue">
+          <div class="stat-icon">🎫</div>
+          <div class="stat-value" id="statQueue">A000</div>
+          <div class="stat-label">Last Queue #</div>
+        </div>
+      </div>
+
+      <!-- Activity Log -->
+      <div class="activity-panel">
+        <div class="activity-header">
+          <h2 class="activity-title">Recent Activity</h2>
+          <button class="btn btn-ghost btn-sm" id="btnRefreshActivity">Refresh</button>
+        </div>
+        <div class="activity-list" id="activityList">
+          <div class="admin-loading"><div class="spinner"></div><span>Loading…</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.admin-content -->
+</div><!-- /#adminLayout -->
+
+<!-- ════════════════════════════════════════════════════
+     MODAL: Add / Edit Menu Item
+═════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="menuItemModal">
+  <div class="modal-box" style="max-width:600px">
+    <div class="modal-header">
+      <div class="modal-title" id="menuModalTitle">Add Menu Item</div>
+      <button class="modal-close" id="menuModalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editItemId" />
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-label" for="itemName">Item Name *</label>
+          <input type="text" id="itemName" class="form-input" placeholder="e.g. Chickenjoy Solo" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="itemCategory">Category *</label>
+          <select id="itemCategory" class="form-select"></select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="itemDesc">Description</label>
+        <textarea id="itemDesc" class="form-input" rows="2" placeholder="Brief description of the item…"></textarea>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-label" for="itemPrice">Price (₱) *</label>
+          <input type="number" id="itemPrice" class="form-input" placeholder="0.00" min="0" step="0.01" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="itemOrder">Sort Order</label>
+          <input type="number" id="itemOrder" class="form-input" value="0" min="0" />
+        </div>
+      </div>
+
+      <!-- Image Upload -->
+      <div class="form-group">
+        <label class="form-label">Food Image</label>
+        <div class="img-upload-area" id="imgUploadArea">
+          <div class="img-upload-icon" id="imgUploadIcon">📷</div>
+          <div class="img-upload-text">Click or drag to upload image</div>
+          <div class="img-upload-sub">JPG, PNG, WebP — Max 10MB</div>
+          <input type="file" id="itemImage" accept="image/*" style="display:none" />
+        </div>
+        <div class="img-preview-wrap" id="imgPreviewWrap" style="display:none">
+          <img id="imgPreview" src="" alt="Preview" class="img-preview" />
+          <button type="button" class="img-remove-btn" id="imgRemoveBtn">✕ Remove</button>
+        </div>
+        <input type="hidden" id="itemImagePath" />
+      </div>
+
+      <!-- Toggles -->
+      <div class="toggle-row">
+        <label class="toggle-label">
+          <input type="checkbox" id="itemAvailable" class="toggle-input" checked />
+          <span class="toggle-switch"></span>
+          Available
+        </label>
+        <label class="toggle-label">
+          <input type="checkbox" id="itemBestseller" class="toggle-input" />
+          <span class="toggle-switch"></span>
+          ⭐ Bestseller
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="menuModalCancel">Cancel</button>
+      <button class="btn btn-primary" id="menuModalSave">Save Item</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     MODAL: Order Details
+═════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="orderDetailModal">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="odTitle">Order #A001</div>
+        <div id="odStatus"></div>
+      </div>
+      <button class="modal-close" id="orderDetailClose">✕</button>
+    </div>
+    <div class="modal-body" id="orderDetailBody">
+      <div class="admin-loading"><div class="spinner"></div></div>
+    </div>
+    <div class="modal-footer" id="orderDetailFooter"></div>
+  </div>
+</div>
+
+<!-- Audio -->
+<audio id="sndNewOrder" src="../assets/sounds/order.mp3"   preload="auto"></audio>
+<audio id="sndReady"    src="../assets/sounds/ready.mp3"   preload="auto"></audio>
+<audio id="sndError"    src="../assets/sounds/error.mp3"   preload="auto"></audio>
+
+<!-- Scripts -->
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/admin.js"></script>
+</body>
+</html>

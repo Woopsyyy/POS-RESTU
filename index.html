@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Loren Eatery — Fast food ordering kiosk. Order your favorite meals quickly and easily." />
+  <title>Loren Eatery — Order Now</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/pos.css" />
+  <link rel="icon" href="assets/img/favicon.ico" type="image/x-icon" />
+</head>
+<body class="pos-bg">
+
+<!-- ── Offline Banner ────────────────────────────────── -->
+<div id="offlineBanner" class="offline-banner">
+  ⚠️ You are offline. Orders will be saved locally and synced when connection returns.
+</div>
+
+<!-- ── Toast Container ──────────────────────────────── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ════════════════════════════════════════════════════
+     POS HEADER
+═════════════════════════════════════════════════════ -->
+<header class="pos-header" id="posHeader">
+  <div class="pos-header-inner">
+    <!-- Logo -->
+    <div class="pos-logo">
+      <div class="pos-logo-icon">🍔</div>
+      <div class="pos-logo-text">
+        <span class="pos-logo-name">Loren Eatery</span>
+        <span class="pos-logo-tagline">Order Fresh, Eat Happy</span>
+      </div>
+    </div>
+
+    <!-- Date & Time -->
+    <div class="pos-clock" id="posClock">
+      <div class="pos-clock-time" id="clockTime">--:--</div>
+      <div class="pos-clock-date" id="clockDate">---</div>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════════════════
+     MAIN LAYOUT
+═════════════════════════════════════════════════════ -->
+<main class="pos-main">
+
+  <!-- ── Category Sidebar ─────────────────────────── -->
+  <aside class="pos-sidebar" id="posSidebar">
+    <div class="sidebar-title">Menu</div>
+    <nav class="category-nav" id="categoryNav">
+      <button class="cat-btn active" data-category="all" id="catAll">
+        <span class="cat-icon">🍽️</span>
+        <span class="cat-label">All Items</span>
+      </button>
+      <!-- Categories loaded dynamically -->
+    </nav>
+  </aside>
+
+  <!-- ── Menu Grid ─────────────────────────────────── -->
+  <section class="pos-menu" id="posMenu">
+    <div class="menu-header">
+      <h1 class="menu-heading" id="menuHeading">All Items</h1>
+      <div class="menu-search-wrap">
+        <input type="search" id="menuSearch" class="menu-search" placeholder="Search menu…" autocomplete="off" />
+        <span class="menu-search-icon">🔍</span>
+      </div>
+    </div>
+
+    <div class="menu-grid" id="menuGrid">
+      <!-- Menu cards loaded dynamically -->
+      <div class="menu-loading" id="menuLoading">
+        <div class="spinner"></div>
+        <p>Loading menu…</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ════════════════════════════════════════════════════
+     FLOATING CART PILL
+═════════════════════════════════════════════════════ -->
+<div class="cart-pill" id="cartPill" role="button" tabindex="0" aria-label="View cart">
+  <div class="cart-pill-count" id="cartPillCount">0</div>
+  <span class="cart-pill-label">View Order</span>
+  <span class="cart-pill-price" id="cartPillPrice">₱0.00</span>
+  <span class="cart-pill-arrow">›</span>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     CART BOTTOM SHEET
+═════════════════════════════════════════════════════ -->
+<div class="bottom-sheet-overlay" id="cartOverlay"></div>
+<div class="bottom-sheet" id="cartSheet">
+  <div class="bottom-sheet-handle"></div>
+  <div class="bottom-sheet-header">
+    <div>
+      <div class="bs-title">🛒 Your Order</div>
+      <div class="bs-subtitle" id="cartSubtitle">0 items</div>
+    </div>
+    <button class="modal-close" id="cartClose" aria-label="Close cart">✕</button>
+  </div>
+  <div class="bottom-sheet-body" id="cartBody">
+    <div class="cart-empty" id="cartEmpty">
+      <div class="cart-empty-icon">🛒</div>
+      <div class="cart-empty-text">Your cart is empty</div>
+      <div class="cart-empty-sub">Add items from the menu to get started</div>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+  </div>
+  <div class="bottom-sheet-footer">
+    <div class="cart-total-row">
+      <span class="cart-total-label">Total</span>
+      <span class="cart-total-value" id="cartTotal">₱0.00</span>
+    </div>
+    <button class="btn btn-primary btn-block btn-lg" id="btnCheckout" disabled>
+      Proceed to Checkout →
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     CHECKOUT MODAL — Customer Name & Receipt Preview
+═════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="checkoutModal">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-header">
+      <div class="modal-title">🧾 Order Review</div>
+      <button class="modal-close" id="checkoutClose">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Customer Name -->
+      <div class="form-group" style="margin-bottom:1.5rem">
+        <label class="form-label" for="customerName">Your Name</label>
+        <input type="text" id="customerName" class="form-input" placeholder="e.g. Juan dela Cruz"
+               maxlength="60" autocomplete="name" />
+      </div>
+
+      <!-- Receipt Preview -->
+      <div class="receipt-preview" id="receiptPreview">
+        <div class="receipt-header">
+          <div class="receipt-logo">🍔</div>
+          <div class="receipt-brand">Loren Eatery</div>
+          <div class="receipt-tagline">Order Fresh, Eat Happy</div>
+          <div class="receipt-divider">- - - - - - - - - - - - - - -</div>
+          <div class="receipt-meta">
+            <span id="rcptDate">---</span>
+            <span id="rcptQueue">Q: ---</span>
+          </div>
+        </div>
+
+        <div class="receipt-items" id="rcptItems"></div>
+
+        <div class="receipt-divider">- - - - - - - - - - - - - - -</div>
+        <div class="receipt-totals">
+          <div class="rcpt-row">
+            <span>Subtotal</span>
+            <span id="rcptSubtotal">₱0.00</span>
+          </div>
+          <div class="rcpt-row rcpt-total">
+            <span>TOTAL</span>
+            <span id="rcptTotal">₱0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Section -->
+      <div class="payment-section" id="paymentSection">
+        <div class="payment-row">
+          <span class="payment-label">Order Total</span>
+          <span class="payment-value" id="payOrderTotal">₱0.00</span>
+        </div>
+
+        <div class="form-group" style="margin-top:1rem">
+          <label class="form-label" for="paymentInput">Cash Payment (₱)</label>
+          <input type="number" id="paymentInput" class="form-input form-input-lg"
+                 placeholder="Enter amount" min="0" step="0.01" autocomplete="off" />
+        </div>
+
+        <!-- Quick payment shortcuts -->
+        <div class="quick-pay" id="quickPay"></div>
+
+        <div class="payment-row payment-change" id="changeRow" style="display:none">
+          <span class="payment-label">Change</span>
+          <span class="payment-value change-value" id="payChange">₱0.00</span>
+        </div>
+        <div class="payment-error" id="paymentError"></div>
+      </div>
+
+      <!-- Estimated Wait -->
+      <div class="wait-estimate" id="waitEstimate">
+        <span>⏱️</span>
+        <span>Estimated wait: <strong id="waitTime">~5–10 mins</strong></span>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="checkoutBack">← Back</button>
+      <button class="btn btn-primary btn-lg" id="btnFinalize">
+        🎉 Place Order
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     SUCCESS MODAL — Queue Number
+═════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal-box" style="max-width:400px; text-align:center">
+    <div class="modal-body" style="padding:2.5rem 2rem">
+      <div class="success-animation" id="successAnimation">🎉</div>
+      <h2 class="success-title">Order Placed!</h2>
+      <p class="success-sub">Your order has been received.</p>
+
+      <div class="queue-number-display">
+        <div class="queue-label">Your Queue Number</div>
+        <div class="queue-number" id="successQueueNumber">A001</div>
+      </div>
+
+      <div class="success-details">
+        <div class="sd-row">
+          <span>Customer</span>
+          <span id="successName">---</span>
+        </div>
+        <div class="sd-row">
+          <span>Total</span>
+          <span id="successTotal">₱0.00</span>
+        </div>
+        <div class="sd-row">
+          <span>Change</span>
+          <span id="successChange">₱0.00</span>
+        </div>
+        <div class="sd-row">
+          <span>Est. Wait</span>
+          <span id="successWait">~10 mins</span>
+        </div>
+      </div>
+
+      <p class="success-hint">Listen for your queue number to be called!</p>
+
+      <button class="btn btn-primary btn-block btn-lg" id="btnNewOrder" style="margin-top:1.5rem">
+        New Order
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden audio elements -->
+<audio id="sndOrder"   src="assets/sounds/order.mp3"   preload="auto"></audio>
+<audio id="sndSuccess" src="assets/sounds/success.mp3" preload="auto"></audio>
+<audio id="sndError"   src="assets/sounds/error.mp3"   preload="auto"></audio>
+
+<!-- Scripts -->
+<script src="assets/js/api.js"></script>
+<script src="assets/js/cart.js"></script>
+<script src="assets/js/pos.js"></script>
+</body>
+</html>

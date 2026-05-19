@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Loren Eatery — Order Queue Display. Check if your order is ready." />
+  <title>Order Status — Loren Eatery</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="assets/css/queue.css" />
+</head>
+<body class="queue-body">
+
+<!-- ── Toast Container ─────────────────────────────── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ════════════════════════════════════════════════════
+     QUEUE DISPLAY LAYOUT
+═════════════════════════════════════════════════════ -->
+<div class="queue-container">
+  
+  <!-- Header -->
+  <header class="queue-header">
+    <div class="queue-logo">
+      <span class="logo-emoji">🍔</span>
+      <div class="logo-text">
+        <div class="brand-name">Loren Eatery</div>
+        <div class="brand-tagline">Now Serving</div>
+      </div>
+    </div>
+    <div class="queue-clock" id="queueClock">
+      <div class="clock-time" id="qTime">--:--:--</div>
+      <div class="clock-date" id="qDate">---</div>
+    </div>
+  </header>
+
+  <main class="queue-main">
+    
+    <!-- READY SECTION (LEFT) -->
+    <section class="queue-section section-ready">
+      <div class="section-header">
+        <span class="section-icon">🔔</span>
+        <h2 class="section-title">Ready for Pickup</h2>
+      </div>
+      <div class="queue-grid" id="readyGrid">
+        <!-- Ready items appear here -->
+        <div class="queue-placeholder">No orders ready yet</div>
+      </div>
+    </section>
+
+    <!-- PREPARING SECTION (RIGHT) -->
+    <section class="queue-section section-preparing">
+      <div class="section-header">
+        <span class="section-icon">👨‍🍳</span>
+        <h2 class="section-title">Preparing</h2>
+      </div>
+      <div class="queue-list" id="preparingList">
+        <!-- Preparing items appear here -->
+        <div class="queue-placeholder">Kitchen is clear</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer / Announcement -->
+  <footer class="queue-footer">
+    <div class="footer-msg">
+      <span class="msg-icon">✨</span>
+      Please present your queue number to the counter when your number turns <strong style="color:var(--status-ready)">GREEN</strong>.
+    </div>
+  </main>
+
+</div>
+
+<!-- Audio for Bell -->
+<audio id="sndBell" src="assets/sounds/ready.mp3" preload="auto"></audio>
+
+<!-- Scripts -->
+<script src="assets/js/api.js"></script>
+<script src="assets/js/queue.js"></script>
+</body>
+</html>
