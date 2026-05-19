@@ -1,30 +1,10 @@
 <?php
 
-// Load local environment variables if .env file exists in the root folder
-if (file_exists(__DIR__ . '/../.env')) {
-    $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        $line = trim($line);
-        if ($line === '' || strpos($line, '#') === 0) {
-            continue; // Skip empty lines and comments
-        }
-        $parts = explode('=', $line, 2);
-        if (count($parts) === 2) {
-            $key = trim($parts[0]);
-            $val = trim($parts[1]);
-            $val = trim($val, '"\''); // Remove surrounding quotes
-            putenv("$key=$val");
-            $_ENV[$key] = $val;
-            $_SERVER[$key] = $val;
-        }
-    }
-}
-
-// Database Connection settings
-define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
-define('DB_NAME', getenv('DB_NAME') ?: 'loren_eatery');
-define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASS') ?: '');
+// Database Connection settings (Hardcoded XAMPP Defaults)
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'loren_eatery');
+define('DB_USER', 'root');
+define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');
 
 // Application settings
@@ -66,7 +46,7 @@ function getDB(): PDO {
     static $pdo = null;
     if ($pdo === null) {
         try {
-            // Parse host and optional port (e.g. "localhost:3307" or "127.0.0.1:3308")
+            // Parse host and optional port if present in host
             $host = DB_HOST;
             $port = null;
             if (strpos($host, ':') !== false) {
@@ -98,4 +78,5 @@ function getDB(): PDO {
     }
     return $pdo;
 }
+
 

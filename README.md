@@ -6,7 +6,7 @@ A modern, highly responsive, and robust Point of Sale (POS) system designed for 
 
 ## 🚀 Easy XAMPP Setup (Any Device / Folder)
 
-This project has been engineered to be **fully portable**. You do not need to hardcode directories or folder names! It will automatically detect its location and work seamlessly on any subfolder under `htdocs` (e.g., `C:\xampp\htdocs\loren_eatery`, `C:\xampp\htdocs\POS-RESTU`, etc.) and on any port.
+This project has been engineered to be **fully portable**. You do not need to edit or hardcode directories or folder names! It will automatically detect its location and work seamlessly on any subfolder under `htdocs` (e.g., `C:\xampp\htdocs\loren_eatery`, `C:\xampp\htdocs\POS-RESTU`, etc.).
 
 ### Step 1: Install XAMPP
 1. Download and install **XAMPP** (PHP 8.0 or newer recommended) from the [official website](https://www.apachefriends.org/).
@@ -28,19 +28,12 @@ This project has been engineered to be **fully portable**. You do not need to ha
 5. Click **Choose File** and select the SQL file located in the project at `/database/init.sql`.
 6. Scroll down and click **Import** (or **Go**).
 
-### Step 5: Configure the Environment (`.env`)
-1. In the root of your project directory, copy `.env.example` and rename it to **`.env`** (a default `.env` is already provided!).
-2. Open `.env` and verify your database details:
-   ```ini
-   DB_HOST=localhost
-   DB_NAME=loren_eatery
-   DB_USER=root
-   DB_PASS=
-   ```
-3. **Using a custom MySQL port?** If your XAMPP's MySQL is configured on a custom port (such as `3307` or `3308`), simply add the port to the `DB_HOST`:
-   ```ini
-   DB_HOST=localhost:3308
-   ```
+### Step 5: Database Connection settings
+* The database settings are **pre-configured by default** to work out-of-the-box with standard XAMPP settings in `/config/database.php`:
+  * **Host:** `localhost`
+  * **Database Name:** `loren_eatery`
+  * **Username:** `root`
+  * **Password:** *(empty)*
 
 ### Step 6: Access the Application
 Open your browser and navigate to the project folder URL:
@@ -84,9 +77,7 @@ Since the project uses **100% relative and dynamically generated root paths**, y
 ├── database/           # SQL schema initialization
 ├── uploads/            # Dynamic uploaded menu item images
 ├── index.html          # Main Customer POS page
-├── queue.html          # Public Queue Display page
-├── .env.example        # Environment variable template
-└── .env                # Local active environment variables
+└── queue.html          # Public Queue Display page
 ```
 
 ---
@@ -107,5 +98,3 @@ To ensure this project is fully plug-and-play across different environments, the
    The backend automatically parses the `$_SERVER['SCRIPT_NAME']` variable to calculate the folder offset dynamically. This eliminates hardcoded paths in image URLs and assets, regardless of whether you put the system in `/` (domain root) or a deep subdirectory like `/xampp/Project/POS restu/`.
 2. **Dynamic Client API Base Detection**: 
    The frontend JavaScript analyzes `window.location.pathname` to detect if the user is in `/admin/` or the root folder, dynamically setting the backend router endpoint to ensure connectivity.
-3. **Environment-Driven DB Configuration**:
-   All DB details are fetched from environment variables with safe defaults. Creating a local `.env` lets you customize port, user, or pass configurations without altering git-controlled code files.
