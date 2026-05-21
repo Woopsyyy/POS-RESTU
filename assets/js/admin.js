@@ -297,6 +297,11 @@ async function updateOrderStatus(id, status) {
 
 // ── Menu Management ───────────────────────────────────────
 async function loadMenuAdmin() {
+    // Show loading state
+    if (menuAdminGrid) {
+        menuAdminGrid.innerHTML = '<div class="admin-loading"><div class="spinner"></div><span>Loading menu…</span></div>';
+    }
+
     try {
         const [menuRes, catRes] = await Promise.all([
             MenuAPI.list(),
@@ -307,20 +312,36 @@ async function loadMenuAdmin() {
             menuCategories = catRes.data;
             renderCategoryFilter(catRes.data);
             populateCategorySelect(catRes.data);
+        } else {
+            console.error('[Admin] Categories failed:', catRes.error);
         }
 
         if (menuRes.success) {
             renderMenuAdmin(menuRes.data);
+        } else {
+            if (menuAdminGrid) {
+                menuAdminGrid.innerHTML = `<div class="table-empty">Failed to load menu: ${escapeHtml(menuRes.error || 'Unknown error')}</div>`;
+            }
         }
     } catch (e) {
-        console.error('Failed to load menu');
+        console.error('[Admin] Failed to load menu:', e);
+        if (menuAdminGrid) {
+            menuAdminGrid.innerHTML = `<div class="table-empty">Error loading menu. Check console for details.</div>`;
+        }
     }
 }
 
 function renderMenuAdmin(items) {
+    if (!menuAdminGrid) return;
+
+    if (!items || items.length === 0) {
+        menuAdminGrid.innerHTML = '<div class="table-empty">No menu items found. Click "+ Add Item" to get started.</div>';
+        return;
+    }
+
     menuAdminGrid.innerHTML = items.map(item => `
-        <div class="item-admin-card">
-            ${item.image_url ? `<img src="${item.image_url}" class="ia-img">` : `<div class="ia-no-img">🍽️</div>`}
+        <div class="item-admin-card" data-category-id="${item.category_id}">
+            ${item.image_url ? `<img src="${item.image_url}" class="ia-img" alt="${escapeHtml(item.name)}">` : `<div class="ia-no-img">🍽️</div>`}
             <div class="ia-body">
                 <div class="ia-name">${escapeHtml(item.name)}</div>
                 <div class="page-sub">${escapeHtml(item.category_name)}</div>
@@ -555,15 +576,37 @@ function updateStatusTabs(orders) {
 }
 
 function renderCategoryFilter(cats) {
+    if (!menuCatFilter) return;
     menuCatFilter.innerHTML = '<button class="cat-filter-btn active" data-cat="all">All</button>' + 
-        cats.map(c => `<button class="cat-filter-btn" data-cat="${c.id}">${c.name}</button>`).join('');
+        cats.map(c => `<button class="cat-filter-btn" data-cat="${escapeHtml(String(c.id))}">${escapeHtml(c.name)}</button>`).join('');
+
+    // Wire up category filter clicks
+    menuCatFilter.querySelectorAll('.cat-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            menuCatFilter.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const cat = btn.dataset.cat;
+            filterMenuByCategory(cat);
+        });
+    });
+}
+
+function filterMenuByCategory(catId) {
+    if (!menuAdminGrid) return;
+    menuAdminGrid.querySelectorAll('.item-admin-card').forEach(card => {
+        if (catId === 'all' || card.dataset.categoryId === catId) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
 }
 
 function populateCategorySelect(cats) {
     const sel = document.getElementById('itemCategory');
     if (sel) {
         sel.innerHTML = '<option value="">Select Category</option>' + 
-            cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            cats.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
     }
 }
 
@@ -577,6 +620,12 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+// ── Utility ───────────────────────────────────────────────
+function escapeHtml(str) {
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+    return String(str).replace(/[&<>"']/g, m => map[m]);
 }
 
 // Global modal close for detail modal
